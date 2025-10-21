@@ -61,7 +61,7 @@ int main() {
         }
         cout<<endl;
     }
-
+    //TODO: wykryj ile ma wątków CPU i GPU za pomocą OPENCL
     //TODO: uruchomienie koknretnej symulacji CPU lub GPU, pomiar czasu lub wyświetlanie symulacji
     //TODO: zapisywanie konfiguracji do pliku .txt
 
