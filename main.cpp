@@ -24,7 +24,7 @@ int main() {
     // Dane, które można wbić na sztywno, jak się nie chce za każdym razem klikać w terminalu. Ustaw wtedy "skipQuestions = true":
     bool skipQuestions = false;
     bool visualize = false;
-    string filename = "";
+    string filename ="";
     // Nie trzeba deklarować, jeżeli podano "filename".
     int columns = 0, rows = 0;
     // Zmienna używana tylko przy trybie graficznym. Nie trzeba deklarować, jeżeli podano "filename".
@@ -51,6 +51,9 @@ int main() {
             gameArea[i][j] = false;
         }
     }
+    for (auto [x, y] : startingCells) {
+        gameArea[y][x] = true;
+    }
     cout << "Rozpoczynam symulację: "<<columns<<" x " << rows<< "; prędkość: "<<simulationSpeed<<endl;
     for (int i = 0; i < columns; i++) {
         for (int j = 0; j < rows; j++) {
@@ -60,6 +63,7 @@ int main() {
     }
 
     //TODO: uruchomienie koknretnej symulacji CPU lub GPU, pomiar czasu lub wyświetlanie symulacji
+    //TODO: zapisywanie konfiguracji do pliku .txt
 
     //Zwalnianie pamięci.
     for (int i = 0; i < columns; i++) {

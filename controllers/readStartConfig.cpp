@@ -6,71 +6,90 @@ using namespace std;
 
 void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows, float& simulationSpeed,std::vector<std::pair<int,int>>& startingCells, bool visualize){
     string input;
-        cout << "Podaj nazwę pliku konfiguracyjnego z folderu '/configFiles' lub naciśnij [ENTER] by konfigurować ręcznie:" << endl;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        getline(cin,input);
-        while (!input.empty() || columns * rows * static_cast<int>(simulationSpeed) != 0) {
-            try { // sprawdza, czy nazwa pliku kończy się na .txt.
-                if (input.substr(input.length() - 4,4) != ".txt")
-                    input.append(".txt");
-            } catch (const out_of_range& e) {
+    ifstream file;
+    int fileLength = 0;
+    cout << "Podaj nazwę pliku konfiguracyjnego z folderu '/configFiles' lub naciśnij [ENTER] by konfigurować ręcznie:" << endl;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    getline(cin,input);
+    while (!input.empty() && fileLength < 3) {
+        try { // sprawdza, czy nazwa pliku kończy się na .txt.
+            if (input.substr(input.length() - 4,4) != ".txt")
                 input.append(".txt");
-            }
-            // Próbuje wczytać dane z pliku.
-            ifstream file(runningDir/"configFiles"/input);
-            int fileLength = 0;
-            for (std::string _; std::getline(file, _); ++fileLength) {}
-            file.seekg(0, ifstream::beg);
-            if (fileLength < 3) { // Plik nie istnieje lub istnieje, ale nie ma danych: kolumny, rzędy i szybkość symulacji.
-                cout << "!!!Nie udało się wczytać pliku: " << input << endl << "Podaj jeszcze raz nazwę:" << endl;
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                getline(cin,input);
-                continue;
-            }
-
-            // Zczytuje konfigurację z pliku.
-            //TODO: zczytywanie z pliku ,columns, rows, speed, startingCells.push_back({1,2]);
-            file.close();
+        } catch (const out_of_range& e) {
+            input.append(".txt");
         }
-        if (input.empty()) { // Nie podano nazwy pliku — trzeba wpisać konfigurację ręcznie.
-            string* missingData = new string[3]{"kolumny","rzędy","szybkość symulacji"};
-            int howManyLoops = (visualize)?3:2;
-            for (int i=0; i<howManyLoops; i++) {
-                cout << "Podaj "+ missingData[i] <<":" << endl;
-                float inputFloat;
-                cin >> inputFloat;
-                if (cin.fail()) {
-                    cin.clear();
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    i--;
-                } else {
-                    switch (i) {
-                        case 0:
-                            columns = static_cast<int>(inputFloat);
-                            break;
-                        case 1:
-                            rows = static_cast<int>(inputFloat);
-                            break;
-                        case 2:
-                            simulationSpeed = inputFloat;
-                            break;
-                    }
+
+        // Próbuje wczytać dane z pliku.
+        file = ifstream(runningDir/"configFiles"/input);
+        fileLength = 0;
+        for (string _; getline(file, _); ++fileLength) {}
+        file.clear();
+        file.seekg(0, ifstream::beg);
+        if (fileLength < 3) { // Plik nie istnieje lub istnieje, ale nie ma danych: kolumny, rzędy i szybkość symulacji.
+            cout << "!!!Nie udało się wczytać pliku: " << input << endl << "Podaj jeszcze raz nazwę:" << endl;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            getline(cin,input);
+        }
+    }
+
+    // Wczytuje konfigurację z pliku.
+    string line;
+    file >> columns >> rows >> simulationSpeed;
+    file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    while (getline(file, line)) {
+        cout << line << endl;
+        istringstream iss(line);
+        if (int x, y; iss >> x >> y) {
+            startingCells.emplace_back(x, y);
+        }
+    }
+    file.close();
+
+    if (input.empty()) { // Nie podano nazwy pliku — trzeba wpisać konfigurację ręcznie.
+        auto* missingData = new string[3]{"kolumny","rzędy","szybkość symulacji"};
+        int howManyLoops = (visualize)?3:2;
+        for (int i=0; i<howManyLoops; i++) {
+            cout << "Podaj "+ missingData[i] <<":" << endl;
+            float inputFloat;
+            cin >> inputFloat;
+            if (cin.fail()) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                i--;
+            } else {
+                switch (i) {
+                    case 0:
+                        columns = static_cast<int>(inputFloat);
+                        break;
+                    case 1:
+                        rows = static_cast<int>(inputFloat);
+                        break;
+                    case 2:
+                    default:
+                        simulationSpeed = inputFloat;
+                        break;
                 }
             }
-            delete[] missingData;
-            do {
-                cout << "Podaj adres początkowej komórki np. 2 4 (X Y)"<<endl<<"lub naciśnij [ENTER] by zakończyć dodawanie:" << endl;
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                getline(cin,input);
-                if (!input.empty())
-                    break;
-
-                istringstream iss(input);
-                if (int x,y; iss >> x >> y) {
-
-                } else {
-                    std::cout << "Niepoprawny format! Wpisz w formacie: X Y.\n";
-                }
-            } while (!input.empty());
         }
+        delete[] missingData;
+
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        do {
+            cout << "Podaj adres początkowej komórki np. 2 4 (X Y)"<<endl<<"lub naciśnij [ENTER] by zakończyć dodawanie:" << endl;
+            getline(cin,input);
+            if (input.empty())
+                break;
+
+            istringstream iss(input);
+            if (int x,y; iss >> x >> y) {
+                if (x >= columns || y >= rows || x < 0 || y < 0) {
+                    std::cout << "Zły zakres. 0 <= X < "<<columns << "; 0 <= Y < " << rows << endl;
+                    continue;
+                }
+                startingCells.emplace_back(x,y);
+            } else {
+                std::cout << "Niepoprawny format! Wpisz w formacie: X Y." << endl;
+            }
+        } while (!input.empty());
+    }
 }
