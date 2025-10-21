@@ -11,4 +11,5 @@ add_executable(akceleracja main.cpp
         controllers/writeController.cpp
         controllers/writeController.h
         tools/EnvVar.cpp
-        tools/EnvVar.h)
+        tools/EnvVar.h
+)

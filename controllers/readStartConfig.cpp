@@ -2,9 +2,12 @@
 #include <fstream>
 #include <filesystem>
 #include "readStartConfig.h"
+#include "writeController.h"
+#include "../tools/switchCase.h"
+
 using namespace std;
 
-void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows, float& simulationSpeed,std::vector<std::pair<int,int>>& startingCells, bool visualize){
+void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows, float& simulationSpeed,std::vector<std::pair<int,int>>& startingCells, bool visualize, string& algorithmName){
     string input;
     ifstream file;
     int fileLength = 0;
@@ -12,13 +15,7 @@ void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows,
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     getline(cin,input);
     while (!input.empty() && fileLength < 3) {
-        try { // sprawdza, czy nazwa pliku kończy się na .txt.
-            if (input.substr(input.length() - 4,4) != ".txt")
-                input.append(".txt");
-        } catch (const out_of_range& e) {
-            input.append(".txt");
-        }
-
+        input = addTxtExtension(input);
         // Próbuje wczytać dane z pliku.
         file = ifstream(runningDir/"configFiles"/input);
         fileLength = 0;
@@ -91,5 +88,48 @@ void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows,
                 std::cout << "Niepoprawny format! Wpisz w formacie: X Y." << endl;
             }
         } while (!input.empty());
+
+        switch (switchCase(new string[3]{"Czy zapisać konfigurację do pliku?","Tak","Nie"},3)) {
+            case 1:
+                cout << "Podaj nazwę pliku:" << endl;
+                getline(cin,input);
+                writeStartConfig(columns,rows,simulationSpeed,runningDir/addTxtExtension(input),startingCells);
+                break;
+            default:
+            case 2:
+                break;
+        }
     }
+    switch (switchCase(new string[6] {
+        "Jakim 'algorytmem' chcesz uruchomić symulację?","Liniowe CPU","Wielowątkowe CPU","GPU ver. 1", "GPU ver. 2","GPU ver. 3"
+    },6)) {
+        default:
+        case 1:
+            algorithmName = "cpulinear";
+            break;
+        case 2:
+            algorithmName = "cpuparallel";
+            break;
+        case 3:
+            algorithmName = "gpu1";
+            break;
+        case 4:
+            algorithmName = "gpu2";
+            break;
+        case 5:
+            algorithmName = "gpu3";
+            break;
+
+    }
+}
+
+std::string addTxtExtension(const std::string &filename) {
+    std::string input = filename;
+    try {
+        if (input.substr(input.length() - 4,4) != ".txt")
+            input.append(".txt");
+    } catch (const std::out_of_range& e) {
+        input.append(".txt");
+    }
+    return input;
 }

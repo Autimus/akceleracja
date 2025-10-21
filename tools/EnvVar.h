@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <filesystem>
+
+//Prosta implementacja zmiennych środowiskowych w .env i ich wczytywania.
 class EnvVar {
     protected:
         std::filesystem::path runningDir  = std::filesystem::current_path().parent_path();

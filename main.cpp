@@ -5,6 +5,7 @@
 #include "tools/switchCase.h"
 #include "tools/Timer.h"
 #include "tools/EnvVar.h"
+
 #include "controllers/readStartConfig.h"
 
 #ifdef _WIN32
@@ -36,6 +37,7 @@ int main() {
     int columns = envVar.findInt("columns"), rows = envVar.findInt("rows");
     // Zmienna używana tylko przy trybie graficznym. Nie trzeba deklarować, jeżeli podano "filename".
     float simulationSpeed = envVar.findFloat("simulationSpeed");
+    string algorithmName = envVar.find("algorithmName");
 
     if (!skipQuestions) {
         switch (switchCase(new string[3]{"Wybierz tryb pracy","Graficzny","Tekstowy - bez wizualizacji, ale z pomiarem czasu"},3)) {
@@ -47,7 +49,7 @@ int main() {
                 visualize = false;
                 break;
         }
-        readStartConfig(runningDir, columns, rows, simulationSpeed,startingCells ,visualize);
+        readStartConfig(runningDir, columns, rows, simulationSpeed,startingCells ,visualize,algorithmName);
     }
     gameArea = new bool*[columns];
     for (int i = 0; i < columns; i++) {
@@ -66,10 +68,22 @@ int main() {
         }
         cout<<endl;
     }
+
     //TODO: wykryj ile ma wątków CPU i GPU za pomocą OPENCL
+
+    if (algorithmName == "cpulinear") {
+        //CPU Linear: funkcja lub kod.
+    } else if (algorithmName == "cpuparallel") {
+        //CPU Parallel: funkcja lub kod.
+    } else if (algorithmName == "gpu1") {
+        //GPU 1: funkcja lub kod.
+    } else if (algorithmName == "gpu2") {
+        //GPU 2: funkcja lub kod.
+    } else if (algorithmName == "gpu3") {
+        //GPU 3: funkcja lub kod.
+    }
+
     //TODO: uruchomienie koknretnej symulacji CPU lub GPU, pomiar czasu lub wyświetlanie symulacji
-    //TODO: zapisywanie konfiguracji do pliku .txt
-    //TODO: zapisywanie wyników - czas, ilość wątków i rozmiar planszy do .txt
 
     //Zwalnianie pamięci.
     for (int i = 0; i < columns; i++) {

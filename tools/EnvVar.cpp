@@ -2,6 +2,7 @@
 #include <utility>
 #include <cctype>
 #include "EnvVar.h"
+
 EnvVar::EnvVar(){
     if (!std::filesystem::exists(runningDir/".env")) {
         createEnvFile();
@@ -18,18 +19,18 @@ EnvVar::EnvVar(){
     }
 }
 void EnvVar::writeToEnvFile() {
-    std::ofstream file (runningDir/".env");
+    std::ofstream file (runningDir/".env",std::ios::out);
     for (auto&[first, second] : variables) {
         file << first << "=" << second << "\n";
     }
 }
 void EnvVar::createEnvFile() {
-    constexpr int size = 8;
+    constexpr int size = 9;
     const auto* defNames = new std::string[size] {
-        "skipQuestions", "visualize", "randomStart", "howManyRandoms","columns", "rows", "simulationSpeed","fileName"
+        "skipQuestions", "visualize", "randomStart", "howManyRandoms","columns", "rows", "simulationSpeed","fileName", "algorithmName"
     };
     const auto* defValues = new std::string[size] {
-        "0","0","0","0","32","32","1","test.txt"
+        "0","0","0","0","32","32","1","test.txt", "cpulinear"
     };
     variables.clear();
     for (int i = 0; i < size; i++) {
@@ -65,6 +66,8 @@ void EnvVar::setEnvVar(const std::string& name, const std::string& value) {
     if (!found) {
         variables.emplace_back(name, value);
     }
+
+    writeToEnvFile();
 }
 void EnvVar::setEnvVar(const std::string& name, const int value) {
     setEnvVar(name,std::to_string(value));

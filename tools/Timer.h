@@ -1,8 +1,8 @@
 #pragma once
 
 #include <chrono>
-// Timer wzięty z https://www.geeksforgeeks.org/chrono-in-c/
 
+// Timer wzięty z https://www.geeksforgeeks.org/chrono-in-c/
 class Timer {
 private:
     std::chrono::time_point<std::chrono::system_clock> start;
