@@ -64,6 +64,7 @@ int main() {
     //TODO: wykryj ile ma wątków CPU i GPU za pomocą OPENCL
     //TODO: uruchomienie koknretnej symulacji CPU lub GPU, pomiar czasu lub wyświetlanie symulacji
     //TODO: zapisywanie konfiguracji do pliku .txt
+    //TODO: zapisywanie wyników - czas, ilość wątków i rozmiar planszy do .txt
 
     //Zwalnianie pamięci.
     for (int i = 0; i < columns; i++) {
