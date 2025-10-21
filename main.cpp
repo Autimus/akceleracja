@@ -4,6 +4,7 @@
 #include <vector>
 #include "tools/switchCase.h"
 #include "tools/Timer.h"
+#include "tools/EnvVar.h"
 #include "controllers/readStartConfig.h"
 
 #ifdef _WIN32
@@ -20,18 +21,21 @@ namespace fs = std::filesystem;
 int main() {
     fs::path runningDir = fs::current_path().parent_path();
     bool** gameArea = nullptr;
+    vector<pair<int,int>> startingCells;
+    EnvVar envVar;
 
     // Dane, które można wbić na sztywno, jak się nie chce za każdym razem klikać w terminalu. Ustaw wtedy "skipQuestions = true":
-    bool skipQuestions = false;
-    bool visualize = false;
-    string filename ="";
+    bool skipQuestions = envVar.findBool("skipQuestions");
+    bool visualize = envVar.findBool("visualize");
+    bool randomStart = envVar.findBool("randomStart");
+    //Ile losowych komórek startowych wygenerować.
+    int howManyRandoms = envVar.findInt("howManyRandoms");
+    //Nie trzeba deklarować, jeżeli "randomStart = true".
+    string filename = envVar.find("filename");
     // Nie trzeba deklarować, jeżeli podano "filename".
-    int columns = 0, rows = 0;
+    int columns = envVar.findInt("columns"), rows = envVar.findInt("rows");
     // Zmienna używana tylko przy trybie graficznym. Nie trzeba deklarować, jeżeli podano "filename".
-    float simulationSpeed = 0;
-    // Nie trzeba deklarować, jeżeli podano "filename".
-    vector<pair<int,int>> startingCells;
-    //startingCells.emplace_back(0, 0);
+    float simulationSpeed = envVar.findFloat("simulationSpeed");
 
     if (!skipQuestions) {
         switch (switchCase(new string[3]{"Wybierz tryb pracy","Graficzny","Tekstowy - bez wizualizacji, ale z pomiarem czasu"},3)) {
@@ -39,6 +43,7 @@ int main() {
                 visualize = true;
                 break;
             case 2:
+            default:
                 visualize = false;
                 break;
         }
