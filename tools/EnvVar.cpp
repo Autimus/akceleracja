@@ -25,12 +25,12 @@ void EnvVar::writeToEnvFile() {
     }
 }
 void EnvVar::createEnvFile() {
-    constexpr int size = 9;
+    constexpr int size = 10;
     const auto* defNames = new std::string[size] {
-        "skipQuestions", "visualize", "randomStart", "howManyRandoms","columns", "rows", "simulationSpeed","fileName", "algorithmName"
+        "skipQuestions", "visualize", "randomStart", "howManyRandoms","columns", "rows", "simulationSpeed","fileName", "algorithmName", "iterations"
     };
     const auto* defValues = new std::string[size] {
-        "0","0","0","0","32","32","1","test.txt", "cpulinear"
+        "0","0","0","0","32","32","1","test.txt", "cpulinear" , "100"
     };
     variables.clear();
     for (int i = 0; i < size; i++) {

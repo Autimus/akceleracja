@@ -2,11 +2,16 @@
 #include <fstream>
 #include <filesystem>
 #include <vector>
-#include "tools/switchCase.h"
-#include "tools/Timer.h"
-#include "tools/EnvVar.h"
+#include <thread>
 
+#include "tools/switchCase.h"
+#include "tools/EnvVar.h"
+#include "tools/countGPUThreads.h"
 #include "controllers/readStartConfig.h"
+#include "controllers/writeController.h"
+#include "controllers/visualizationController.h"
+#include "controllers/generateRandomGame.h"
+#include "algorithms/cpuLinear.h"
 
 #ifdef _WIN32
 #include <conio.h>
@@ -38,6 +43,8 @@ int main() {
     // Zmienna używana tylko przy trybie graficznym. Nie trzeba deklarować, jeżeli podano "filename".
     float simulationSpeed = envVar.findFloat("simulationSpeed");
     string algorithmName = envVar.find("algorithmName");
+    // Ile iteracji do zakończenia symulacji. (-1 = nieskończoność)
+    int iterations = envVar.findInt("iterations");
 
     if (!skipQuestions) {
         switch (switchCase(new string[3]{"Wybierz tryb pracy","Graficzny","Tekstowy - bez wizualizacji, ale z pomiarem czasu"},3)) {
@@ -49,7 +56,7 @@ int main() {
                 visualize = false;
                 break;
         }
-        readStartConfig(runningDir, columns, rows, simulationSpeed,startingCells ,visualize,algorithmName);
+        readStartConfig(runningDir, columns, rows, simulationSpeed,startingCells ,visualize,algorithmName, iterations);
     }
     gameArea = new bool*[columns];
     for (int i = 0; i < columns; i++) {
@@ -69,10 +76,23 @@ int main() {
         cout<<endl;
     }
 
-    //TODO: wykryj ile ma wątków CPU i GPU za pomocą OPENCL
+    if (randomStart) {
+        generateRandomGame(columns, rows, gameArea, howManyRandoms);
+    }
+
+    int cpuThreads = thread::hardware_concurrency();
+    //int gpuThreads = countGPUThreads();
 
     if (algorithmName == "cpulinear") {
-        //CPU Linear: funkcja lub kod.
+        if (visualize) {
+            for (int i = 0; i < iterations; i++) {
+                visualizationController(gameArea);
+                cpuLinear(columns, rows, gameArea);
+            }
+        } else {
+            double time = cpuLinear(columns, rows, gameArea, iterations);
+            saveStatistics(1,columns*rows,time,algorithmName,"results/"+algorithmName+".txt");
+        }
     } else if (algorithmName == "cpuparallel") {
         //CPU Parallel: funkcja lub kod.
     } else if (algorithmName == "gpu1") {

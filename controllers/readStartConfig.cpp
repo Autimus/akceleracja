@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows, float& simulationSpeed,std::vector<std::pair<int,int>>& startingCells, bool visualize, string& algorithmName){
+void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows, float& simulationSpeed,std::vector<std::pair<int,int>>& startingCells, bool visualize, string& algorithmName, int& iterations){
     string input;
     ifstream file;
     int fileLength = 0;
@@ -100,6 +100,15 @@ void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows,
                 break;
         }
     }
+    do {
+        cout << "Podaj liczbę iteracji symulacji (-1 oznacza nieskończoność):"<<endl;
+        getline(cin,input);
+        if (int temp = stoi(input); temp == 0 || temp < -1) {
+            input.clear();
+        }
+    } while (!input.empty());
+    iterations=stoi(input);
+
     switch (switchCase(new string[6] {
         "Jakim 'algorytmem' chcesz uruchomić symulację?","Liniowe CPU","Wielowątkowe CPU","GPU ver. 1", "GPU ver. 2","GPU ver. 3"
     },6)) {
