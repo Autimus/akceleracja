@@ -9,38 +9,19 @@ using namespace std;
 
 void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows, float& simulationSpeed,std::vector<std::pair<int,int>>& startingCells, bool visualize, string& algorithmName, int& iterations){
     string input;
-    ifstream file;
-    int fileLength = 0;
     cout << "Podaj nazwę pliku konfiguracyjnego z folderu '/configFiles' lub naciśnij [ENTER] by konfigurować ręcznie:" << endl;
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     getline(cin,input);
-    while (!input.empty() && fileLength < 3) {
-        input = addTxtExtension(input);
-        // Próbuje wczytać dane z pliku.
-        file = ifstream(runningDir/"configFiles"/input);
-        fileLength = 0;
-        for (string _; getline(file, _); ++fileLength) {}
-        file.clear();
-        file.seekg(0, ifstream::beg);
-        if (fileLength < 3) { // Plik nie istnieje lub istnieje, ale nie ma danych: kolumny, rzędy i szybkość symulacji.
+    bool stop = false;
+    while (!input.empty() && !stop) {
+        stop = readFile(runningDir,columns,rows,simulationSpeed,startingCells,input);
+        if (!stop) { // Plik nie istnieje lub istnieje, ale nie ma danych: kolumny, rzędy i szybkość symulacji.
             cout << "!!!Nie udało się wczytać pliku: " << input << endl << "Podaj jeszcze raz nazwę:" << endl;
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             getline(cin,input);
         }
     }
 
-    // Wczytuje konfigurację z pliku.
-    string line;
-    file >> columns >> rows >> simulationSpeed;
-    file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    while (getline(file, line)) {
-        cout << line << endl;
-        istringstream iss(line);
-        if (int x, y; iss >> x >> y) {
-            startingCells.emplace_back(x, y);
-        }
-    }
-    file.close();
 
     if (input.empty()) { // Nie podano nazwy pliku — trzeba wpisać konfigurację ręcznie.
         auto* missingData = new string[3]{"kolumny","rzędy","szybkość symulacji"};
@@ -130,6 +111,33 @@ void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows,
             break;
 
     }
+}
+
+    // Wczytuje konfigurację z pliku.
+bool readFile(std::filesystem::path& runningDir, int& columns, int& rows, float& simulationSpeed,std::vector<std::pair<int,int>>& startingCells, string fileName) {
+    ifstream file;
+    fileName = addTxtExtension(fileName);
+    // Próbuje wczytać dane z pliku.
+    file = ifstream(runningDir/"configFiles"/fileName);
+    int fileLength = 0;
+    for (string _; getline(file, _); ++fileLength) {}
+    file.clear();
+    file.seekg(0, ifstream::beg);
+    if (fileLength < 3)
+        return false;
+
+    string line;
+    file >> columns >> rows >> simulationSpeed;
+    file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    while (getline(file, line)) {
+        cout << line << endl;
+        istringstream iss(line);
+        if (int x, y; iss >> x >> y) {
+            startingCells.emplace_back(x, y);
+        }
+    }
+    file.close();
+    return true;
 }
 
 std::string addTxtExtension(const std::string &filename) {

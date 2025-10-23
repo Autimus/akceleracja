@@ -10,7 +10,7 @@
 #include "controllers/readStartConfig.h"
 #include "controllers/writeController.h"
 #include "controllers/visualizationController.h"
-#include "controllers/generateRandomGame.h"
+#include "gameLogic/GameInstance.h"
 #include "algorithms/cpuLinear.h"
 
 #ifdef _WIN32
@@ -26,7 +26,6 @@ namespace fs = std::filesystem;
 
 int main() {
     fs::path runningDir = fs::current_path().parent_path();
-    bool** gameArea = nullptr;
     vector<pair<int,int>> startingCells;
     EnvVar envVar;
 
@@ -45,6 +44,7 @@ int main() {
     string algorithmName = envVar.find("algorithmName");
     // Ile iteracji do zakończenia symulacji. (-1 = nieskończoność)
     int iterations = envVar.findInt("iterations");
+    envVar.print();
 
     if (!skipQuestions) {
         switch (switchCase(new string[3]{"Wybierz tryb pracy","Graficzny","Tekstowy - bez wizualizacji, ale z pomiarem czasu"},3)) {
@@ -57,28 +57,17 @@ int main() {
                 break;
         }
         readStartConfig(runningDir, columns, rows, simulationSpeed,startingCells ,visualize,algorithmName, iterations);
+    } else {
+        readFile(runningDir, columns, rows, simulationSpeed, startingCells, filename);
     }
-    gameArea = new bool*[columns];
-    for (int i = 0; i < columns; i++) {
-        gameArea[i] = new bool[rows];
-        for (int j = 0; j < rows; j++) {
-            gameArea[i][j] = false;
-        }
-    }
-    for (auto [x, y] : startingCells) {
-        gameArea[y][x] = true;
-    }
-    cout << "Rozpoczynam symulację: "<<columns<<" x " << rows<< "; prędkość: "<<simulationSpeed<<endl;
-    for (int i = 0; i < columns; i++) {
-        for (int j = 0; j < rows; j++) {
-            cout<<gameArea[i][j]<<" ";
-        }
-        cout<<endl;
+    GameInstance game(columns,rows,startingCells);
+    if (randomStart) {
+        game.addRandoms(howManyRandoms);
     }
 
-    if (randomStart) {
-        generateRandomGame(columns, rows, gameArea, howManyRandoms);
-    }
+    cout << "Rozpoczynam symulację: "<<columns<<" x " << rows<< "; prędkość: "<<simulationSpeed<<endl;
+    game.print();
+
 
     int cpuThreads = thread::hardware_concurrency();
     //int gpuThreads = countGPUThreads();
@@ -86,11 +75,15 @@ int main() {
     if (algorithmName == "cpulinear") {
         if (visualize) {
             for (int i = 0; i < iterations; i++) {
-                visualizationController(gameArea);
-                cpuLinear(columns, rows, gameArea);
+                //clrscr();
+                system("clear");
+                game.print();
+                cout<<"Iteracja: "<<i<<endl;
+                cpuLinear(game);
+                sleep(1 * simulationSpeed);
             }
         } else {
-            double time = cpuLinear(columns, rows, gameArea, iterations);
+            double time = cpuLinear(game, iterations);
             saveStatistics(1,columns*rows,time,algorithmName,"results/"+algorithmName+".txt");
         }
     } else if (algorithmName == "cpuparallel") {
@@ -103,12 +96,5 @@ int main() {
         //GPU 3: funkcja lub kod.
     }
 
-    //TODO: uruchomienie koknretnej symulacji CPU lub GPU, pomiar czasu lub wyświetlanie symulacji
-
-    //Zwalnianie pamięci.
-    for (int i = 0; i < columns; i++) {
-        delete[] gameArea[i];
-    }
-    delete[] gameArea;
     return 0;
 }

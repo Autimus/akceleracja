@@ -3,6 +3,8 @@
 #include <cctype>
 #include "EnvVar.h"
 
+#include <iostream>
+
 EnvVar::EnvVar(){
     if (!std::filesystem::exists(runningDir/".env")) {
         createEnvFile();
@@ -81,18 +83,32 @@ void EnvVar::setEnvVar(const std::string& name, const bool value) {
 
 std::string EnvVar::find(const std::string& name) {
     for (auto&[first, second] : variables) {
-        if (first == name) {
+        if (first == to_lower(trim(name))) {
             return second;
         }
     }
     return "";
 }
 int EnvVar::findInt(const std::string& name) {
-    return stoi(find(name));
+    int output = 0;
+    try {
+        output = stoi(find(name));
+    } catch (std::exception e) {}
+    return output;
 }
 float EnvVar::findFloat(const std::string& name) {
-    return stof(find(name));
+    float output = 0.0f;
+    try {
+        output = stof(find(name));
+    } catch (std::exception e) {}
+    return output;
 }
 bool EnvVar::findBool(const std::string& name) {
-    return static_cast<bool>(findInt(name));
+    return (findInt(name) != 0);
+}
+
+void EnvVar::print() {
+    for (auto&[first, second] : variables) {
+        std::cout << first << "=" << second << "\n";
+    }
 }

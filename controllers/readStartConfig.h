@@ -10,3 +10,5 @@ void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows,
 
 // sprawdza, czy nazwa pliku kończy się na .txt, jak nie to go dodaje
 std::string addTxtExtension(const std::string &filename);
+
+bool readFile(std::filesystem::path& runningDir, int& columns, int& rows, float& simulationSpeed,std::vector<std::pair<int,int>>& startingCells, std::string fileName);

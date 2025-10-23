@@ -22,5 +22,6 @@ class EnvVar {
         int findInt(const std::string& name);
         bool findBool(const std::string& name);
         float findFloat(const std::string& name);
+        void print();
 };
 

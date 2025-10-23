@@ -17,8 +17,9 @@ add_executable(akceleracja main.cpp
         algorithms/cpuLinear.h
         controllers/visualizationController.cpp
         controllers/visualizationController.h
-        controllers/generateRandomGame.h
         tools/BetterRandom.h
+        gameLogic/GameInstance.cpp
+        gameLogic/GameInstance.h
 )
 find_package(OpenCL REQUIRED)
 target_link_libraries(akceleracja PRIVATE OpenCL::OpenCL)
