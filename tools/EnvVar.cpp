@@ -45,7 +45,7 @@ void EnvVar::createEnvFile() {
     writeToEnvFile();
 }
 
-std::string EnvVar::trim(const std::string &s) {
+std::string EnvVar::trim(const std::string &s){
     const auto start = s.find_first_not_of(" \t\r\n");
     const auto end = s.find_last_not_of(" \t\r\n");
     return (start == std::string::npos) ? "" : s.substr(start, end - start + 1);

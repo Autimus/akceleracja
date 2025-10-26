@@ -1,3 +1,5 @@
 #pragma once
 
-void visualizationController(bool** gameArea, float animationsSpeed);
+#include "../gameLogic/GameInstance.h"
+
+void visualizationController(GameInstance& game, float animationsSpeed, int iteration);

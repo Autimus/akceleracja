@@ -20,6 +20,9 @@ add_executable(akceleracja main.cpp
         tools/BetterRandom.h
         gameLogic/GameInstance.cpp
         gameLogic/GameInstance.h
+        tools/clearScreen.h
+        algorithms/cpuParallel.cpp
+        algorithms/cpuParallel.h
 )
 find_package(OpenCL REQUIRED)
 target_link_libraries(akceleracja PRIVATE OpenCL::OpenCL)

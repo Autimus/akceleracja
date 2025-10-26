@@ -21,4 +21,6 @@ public:
     int getColumns();
     int getRows();
     void print();
+    std::vector <std::pair<int,int>> toVector();
+    GameInstance copy();
 };

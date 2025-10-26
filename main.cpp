@@ -12,14 +12,7 @@
 #include "controllers/visualizationController.h"
 #include "gameLogic/GameInstance.h"
 #include "algorithms/cpuLinear.h"
-
-#ifdef _WIN32
-#include <conio.h>
-#include <cstdlib>
-#else
-#include <unistd.h>
-#include <termios.h>
-#endif
+#include "algorithms/cpuParallel.h"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -30,6 +23,8 @@ int main() {
     EnvVar envVar;
 
     // Dane, które można wbić na sztywno, jak się nie chce za każdym razem klikać w terminalu. Ustaw wtedy "skipQuestions = true":
+    // Po pierwszym uruchomieniu programu, tworzy plik .env, który przechowuje zmienne środowiskowe i ich modyfikacja modyfikuje,
+    // działanie aplikacji.
     bool skipQuestions = envVar.findBool("skipQuestions");
     bool visualize = envVar.findBool("visualize");
     bool randomStart = envVar.findBool("randomStart");
@@ -56,7 +51,7 @@ int main() {
                 visualize = false;
                 break;
         }
-        readStartConfig(runningDir, columns, rows, simulationSpeed,startingCells ,visualize,algorithmName, iterations);
+        readStartConfig(runningDir, columns, rows, simulationSpeed,startingCells ,visualize,algorithmName, iterations, randomStart);
     } else {
         readFile(runningDir, columns, rows, simulationSpeed, startingCells, filename);
     }
@@ -65,7 +60,11 @@ int main() {
         game.addRandoms(howManyRandoms);
     }
 
-    cout << "Rozpoczynam symulację: "<<columns<<" x " << rows<< "; prędkość: "<<simulationSpeed<<endl;
+    cout << "Rozpoczynam symulację: "<<columns<<" x " << rows;
+    if (visualize) {
+        cout<<"; prędkość: "<<simulationSpeed;
+    }
+    cout<<endl;
     game.print();
 
 
@@ -75,19 +74,25 @@ int main() {
     if (algorithmName == "cpulinear") {
         if (visualize) {
             for (int i = 0; i < iterations; i++) {
-                //clrscr();
-                system("clear");
-                game.print();
-                cout<<"Iteracja: "<<i<<endl;
                 cpuLinear(game);
-                sleep(1 * simulationSpeed);
+                visualizationController(game, simulationSpeed, i);
             }
         } else {
             double time = cpuLinear(game, iterations);
-            saveStatistics(1,columns*rows,time,algorithmName,"results/"+algorithmName+".txt");
+            cout<<"Czas wykonywania: "<<time<<"[s]"<<endl;
+            saveStatistics(1,columns*rows,time,algorithmName,runningDir/"results");
         }
     } else if (algorithmName == "cpuparallel") {
-        //CPU Parallel: funkcja lub kod.
+        if (visualize) {
+            for (int i = 0; i < iterations; i++) {
+                cpuParallel(game,cpuThreads);
+                visualizationController(game, simulationSpeed, i);
+            }
+        } else {
+            double time = cpuParallel(game,cpuThreads ,iterations);
+            cout<<"Czas wykonywania: "<<time<<"[s]"<<endl;
+            saveStatistics(cpuThreads,columns*rows,time,algorithmName,runningDir/"results");
+        }
     } else if (algorithmName == "gpu1") {
         //GPU 1: funkcja lub kod.
     } else if (algorithmName == "gpu2") {

@@ -116,3 +116,21 @@ void GameInstance::print() {
         cout<<endl;
     }
 }
+
+vector <std::pair<int,int>> GameInstance::toVector() {
+    vector <std::pair<int,int>> output;
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < columns; j++) {
+            if (gameArea[i][j]) {
+                output.emplace_back(j,i);
+            }
+        }
+    }
+    return output;
+}
+
+GameInstance GameInstance::copy() {
+    vector <std::pair<int,int>> startingCells = toVector();
+    GameInstance gameCopy = GameInstance(columns,rows,startingCells);
+    return gameCopy;
+}
