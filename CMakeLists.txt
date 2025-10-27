@@ -15,8 +15,8 @@ add_executable(akceleracja main.cpp
         tools/countGPUThreads.h
         algorithms/cpuLinear.cpp
         algorithms/cpuLinear.h
-        controllers/visualizationController.cpp
-        controllers/visualizationController.h
+        controllers/VisualizationController.cpp
+        controllers/VisualizationController.h
         tools/BetterRandom.h
         gameLogic/GameInstance.cpp
         gameLogic/GameInstance.h

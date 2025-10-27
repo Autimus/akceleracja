@@ -9,7 +9,7 @@
 #include "tools/countGPUThreads.h"
 #include "controllers/readStartConfig.h"
 #include "controllers/writeController.h"
-#include "controllers/visualizationController.h"
+#include "controllers/VisualizationController.h"
 #include "gameLogic/GameInstance.h"
 #include "algorithms/cpuLinear.h"
 #include "algorithms/cpuParallel.h"
@@ -69,13 +69,14 @@ int main() {
 
 
     int cpuThreads = thread::hardware_concurrency();
-    //int gpuThreads = countGPUThreads();
+    int gpuThreads = countGPUThreads();
+    VisualizationController terminal(game, (algorithmName.substr(0,3) == "cpu")?cpuThreads:gpuThreads, simulationSpeed);
 
     if (algorithmName == "cpulinear") {
         if (visualize) {
             for (int i = 0; i < iterations; i++) {
                 cpuLinear(game);
-                visualizationController(game, simulationSpeed, i);
+                terminal.show();
             }
         } else {
             double time = cpuLinear(game, iterations);
@@ -86,7 +87,7 @@ int main() {
         if (visualize) {
             for (int i = 0; i < iterations; i++) {
                 cpuParallel(game,cpuThreads);
-                visualizationController(game, simulationSpeed, i);
+                terminal.show();
             }
         } else {
             double time = cpuParallel(game,cpuThreads ,iterations);

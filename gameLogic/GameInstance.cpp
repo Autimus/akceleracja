@@ -111,11 +111,14 @@ void GameInstance::applyIteration() {
 void GameInstance::print() {
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
-            cout<<gameArea[i][j]<<" ";
+            cout<<((gameArea[i][j])?"⬜":"⬛");
         }
         cout<<endl;
     }
 }
+
+
+
 
 vector <std::pair<int,int>> GameInstance::toVector() {
     vector <std::pair<int,int>> output;
