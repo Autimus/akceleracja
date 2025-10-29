@@ -13,6 +13,7 @@ void writeStartConfig(int columns, int rows, float simulationSpeed, std::filesys
 }
 
 void saveStatistics(int threadsNumber, int cellsNumber, double time,std::string& algorithmName, std::filesystem::path dir) {
+    std::filesystem::create_directories(dir);
     std::ofstream file;
     std::filesystem::path filename = dir/algorithmName.append(".txt");
     if (!std::filesystem::exists(filename)) {

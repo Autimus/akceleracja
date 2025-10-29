@@ -1,7 +1,10 @@
-cmake_minimum_required(VERSION 4.0)
-project(akceleracja)
+cmake_minimum_required(VERSION 3.21)
+project(akceleracja LANGUAGES CXX CUDA)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CUDA_STANDARD 17)
+
+set(CMAKE_CUDA_ARCHITECTURES 86)
 
 add_executable(akceleracja main.cpp
         tools/switchCase.h
@@ -23,6 +26,13 @@ add_executable(akceleracja main.cpp
         tools/clearScreen.h
         algorithms/cpuParallel.cpp
         algorithms/cpuParallel.h
-)
+        algorithms/gpuBasic.cu
+        algorithms/gpuBasic.h
+
+        )
+set_target_properties(akceleracja PROPERTIES
+        CUDA_SEPARABLE_COMPILATION ON
+        CUDA_ARCHITECTURES 86
+        )
 find_package(OpenCL REQUIRED)
 target_link_libraries(akceleracja PRIVATE OpenCL::OpenCL)

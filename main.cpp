@@ -13,12 +13,14 @@
 #include "gameLogic/GameInstance.h"
 #include "algorithms/cpuLinear.h"
 #include "algorithms/cpuParallel.h"
+#include "algorithms/gpuBasic.h"
 
 using namespace std;
 namespace fs = std::filesystem;
 
 int main() {
-    fs::path runningDir = fs::current_path().parent_path();
+    fs::path runningDir = fs::current_path().parent_path().parent_path();
+
     vector<pair<int,int>> startingCells;
     EnvVar envVar;
 
@@ -95,6 +97,23 @@ int main() {
         }
     } else if (algorithmName == "gpu1") {
         //GPU 1: funkcja lub kod.
+        if (visualize) {
+            for(int i=0;i<iterations;i++){
+                gpuBasic(game);
+                visualizationController(game, simulationSpeed, i);
+            }
+        }else {
+            double time = gpuBasic(game, iterations);
+            cout << "Czas wykonywania: " << time << "[s]" << endl;
+            //liczba wątków wykorzystana na jedną iterację
+            int blocksX = (columns + 16 - 1) / 16;
+            int blocksY = (rows + 16 - 1) / 16;
+            int totalBlocks = blocksX * blocksY;
+            int threadsPerBlock = 16 * 16; // 256
+            int totalThreads = totalBlocks * threadsPerBlock;
+            saveStatistics(totalThreads,columns*rows,time,algorithmName,runningDir/"results");
+
+        }
     } else if (algorithmName == "gpu2") {
         //GPU 2: funkcja lub kod.
     } else if (algorithmName == "gpu3") {
