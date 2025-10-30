@@ -71,7 +71,13 @@ int main() {
 
 
     int cpuThreads = thread::hardware_concurrency();
-    int gpuThreads = countGPUThreads();
+
+    //liczba wątków wykorzystana na jedną iterację
+    int blocksX = (columns + 16 - 1) / 16;
+    int blocksY = (rows + 16 - 1) / 16;
+    int totalBlocks = blocksX * blocksY;
+    int threadsPerBlock = 16 * 16; // 256
+    int gpuThreads = totalBlocks * threadsPerBlock;
     VisualizationController terminal(game, (algorithmName.substr(0,3) == "cpu")?cpuThreads:gpuThreads, simulationSpeed);
 
     if (algorithmName == "cpulinear") {
@@ -101,19 +107,12 @@ int main() {
         if (visualize) {
             for(int i=0;i<iterations;i++){
                 gpuBasic(game);
-                visualizationController(game, simulationSpeed, i);
+                terminal.show();
             }
         }else {
             double time = gpuBasic(game, iterations);
             cout << "Czas wykonywania: " << time << "[s]" << endl;
-            //liczba wątków wykorzystana na jedną iterację
-            int blocksX = (columns + 16 - 1) / 16;
-            int blocksY = (rows + 16 - 1) / 16;
-            int totalBlocks = blocksX * blocksY;
-            int threadsPerBlock = 16 * 16; // 256
-            int totalThreads = totalBlocks * threadsPerBlock;
-            saveStatistics(totalThreads,columns*rows,time,algorithmName,runningDir/"results");
-
+            saveStatistics(gpuThreads,columns*rows,time,algorithmName,runningDir/"results");
         }
     } else if (algorithmName == "gpu2") {
         //GPU 2: funkcja lub kod.

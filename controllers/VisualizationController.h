@@ -22,4 +22,5 @@ class VisualizationController{
         ~VisualizationController();
         void show();
         int whichColor(int row);
+        int whichColor(int x, int y);
 };

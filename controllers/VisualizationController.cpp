@@ -44,8 +44,12 @@ void VisualizationController::show(){
     bool** gameArea = game.getGameArea();
 
     for (int i = 0; i < rows; i++) {
-        int threadNumber = whichColor(i);
+        int threadNumber;
+        if (threads <= 128)
+            threadNumber= whichColor(i);
         for (int j = 0; j < columns; j++) {
+            if (threads > 128)
+                threadNumber= whichColor(j,i);
             string color = (gameArea[i][j]) ? colors[threadNumber] : black;
             cout << color << "  ";
         }
@@ -56,10 +60,16 @@ void VisualizationController::show(){
     this_thread::sleep_for(chrono::milliseconds(static_cast<int>((1000/animationsSpeed))));
 }
 
+// Wątek posiada cały rząd/lub kilka rzędów
 int VisualizationController::whichColor(int row) {
     int rowsPerThread = rows / threads;
     int remainder = rows % threads;
     int cutoff = (rowsPerThread + 1) * remainder;
 
     return (row < cutoff)? row / (rowsPerThread + 1) : remainder + (row - cutoff) / rowsPerThread;
+}
+
+// 1 wątek == 1 pixel
+int VisualizationController::whichColor(int x, int y) {
+    return y * columns + x;
 }
