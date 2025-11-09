@@ -3,6 +3,8 @@
 #include <filesystem>
 #include <vector>
 #include <thread>
+#include <filesystem>
+#include <iostream>
 
 #include "tools/switchCase.h"
 #include "tools/EnvVar.h"
@@ -15,12 +17,15 @@
 #include "algorithms/cpuParallel.h"
 #include "algorithms/gpuBasic.h"
 
+#include "algorithms/gpuOpt2.h"
+
+
 using namespace std;
 namespace fs = std::filesystem;
 
 int main() {
-    fs::path runningDir = fs::current_path().parent_path().parent_path();
-
+    //fs::path runningDir = fs::current_path().parent_path().parent_path();
+    fs::path runningDir = fs::current_path().parent_path();
     vector<pair<int,int>> startingCells;
     EnvVar envVar;
 
@@ -115,9 +120,18 @@ int main() {
             saveStatistics(gpuThreads,columns*rows,time,algorithmName,runningDir/"results");
         }
     } else if (algorithmName == "gpu2") {
-        //GPU 2: funkcja lub kod.
+        if (visualize) {
+            for (int i = 0; i < iterations; i++) {
+                gpuOpt2(game);
+                terminal.show();
+            }
+        } else {
+            double time = gpuOpt2(game, iterations);
+            cout << "Czas wykonywania: " << time << " [s]" << endl;
+            saveStatistics(gpuThreads, columns * rows, time, algorithmName, runningDir / "results");
+        }
     } else if (algorithmName == "gpu3") {
-        //GPU 3: funkcja lub kod.
+
     }
 
     return 0;

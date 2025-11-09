@@ -28,8 +28,12 @@ add_executable(akceleracja main.cpp
         algorithms/cpuParallel.h
         algorithms/gpuBasic.cu
         algorithms/gpuBasic.h
+        algorithms/gpuOpt1.h
+        algorithms/gpuOpt1.cu
+        algorithms/gpuOpt2.h
+        algorithms/gpuOpt2.cu
 
-        )
+)
 set_target_properties(akceleracja PROPERTIES
         CUDA_SEPARABLE_COMPILATION ON
         CUDA_ARCHITECTURES 86
