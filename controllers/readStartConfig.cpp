@@ -10,10 +10,9 @@ using namespace std;
 
 void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows, float& simulationSpeed,std::vector<std::pair<int,int>>& startingCells, bool visualize, string& algorithmName, int& iterations, bool& randomStart){
     string input;
-    /*cout << "Podaj nazwę pliku konfiguracyjnego z folderu '/configFiles' lub naciśnij [ENTER] by konfigurować ręcznie:" << endl;
+    cout << "Podaj nazwę pliku konfiguracyjnego z folderu '/configFiles' lub naciśnij [ENTER] by konfigurować ręcznie:" << endl;
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    getline(cin,input); */
-    input = "bigtest";
+    getline(cin,input);
     bool stop = false;
     while (!input.empty() && !stop) {
         stop = readFile(runningDir,columns,rows,simulationSpeed,startingCells,input);
