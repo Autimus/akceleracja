@@ -10,15 +10,14 @@ using namespace std;
 
 void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows, float& simulationSpeed,std::vector<std::pair<int,int>>& startingCells, bool visualize, string& algorithmName, int& iterations, bool& randomStart){
     string input;
-    cout << "Podaj nazwę pliku konfiguracyjnego z folderu '/configFiles' lub naciśnij [ENTER] by konfigurować ręcznie:" << endl;
+    cout << "Podaj nazwe pliku konfiguracyjnego z folderu '/configFiles' lub nacisnij [ENTER] by konfigurowac recznie:" << endl;
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     getline(cin,input);
     bool stop = false;
     while (!input.empty() && !stop) {
         stop = readFile(runningDir,columns,rows,simulationSpeed,startingCells,input);
         if (!stop) { // Plik nie istnieje lub istnieje, ale nie ma danych: kolumny, rzędy i szybkość symulacji.
-            cout << "!!!Nie udało się wczytać pliku: " << input << endl << "Podaj jeszcze raz nazwę:" << endl;
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "!!!Nie udalo sie wczytac pliku: " << input << endl << "Podaj jeszcze raz nazwe:" << endl;
             getline(cin,input);
         }
     }
@@ -26,7 +25,7 @@ void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows,
 
     if (input.empty()) {
         // Nie podano nazwy pliku — trzeba wpisać konfigurację ręcznie.
-        auto* missingData = new string[3]{"kolumny","rzędy","szybkość symulacji"};
+        auto* missingData = new string[3]{"kolumny","rzedy","szybkosc symulacji"};
         int howManyLoops = (visualize)?3:2;
         for (int i=0; i<howManyLoops; i++) {
             cout << "Podaj "+ missingData[i] <<":" << endl;
@@ -55,7 +54,7 @@ void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows,
 
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         do {
-            cout << "Podaj adres początkowej komórki np. 2 4 (X Y)"<<endl<<"lub naciśnij [ENTER] by zakończyć dodawanie:" << endl;
+            cout << "Podaj adres poczatkowej komorki np. 2 4 (X Y)"<<endl<<"lub nacisnij [ENTER] by zakonczyc dodawanie:" << endl;
             getline(cin,input);
             if (input.empty())
                 break;
@@ -63,7 +62,7 @@ void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows,
             istringstream iss(input);
             if (int x,y; iss >> x >> y) {
                 if (x >= columns || y >= rows || x < 0 || y < 0) {
-                    std::cout << "Zły zakres. 0 <= X < "<<columns << "; 0 <= Y < " << rows << endl;
+                    std::cout << "Zly zakres. 0 <= X < "<<columns << "; 0 <= Y < " << rows << endl;
                     continue;
                 }
                 startingCells.emplace_back(x,y);
@@ -73,8 +72,11 @@ void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows,
         } while (!input.empty());
 
         do {
-            cout << "Podaj liczbę losowych komórek do dodania:"<<endl;
+            cout << "Podaj liczbe losowych komorek do dodania:"<<endl;
             getline(cin,input);
+            if (input.empty()) {
+                input="0";
+            }
             if (int temp = stoi(input); temp < 0 || temp >= (columns*rows) - startingCells.size() ) {
                 input.clear();
             }
@@ -96,11 +98,10 @@ void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows,
             randomStart=false;
         }
 
-        switch (switchCase(new string[3]{"Czy zapisać konfigurację do pliku?","Tak","Nie"},3)) {
+        switch (switchCase(new string[3]{"Czy zapisac konfiguracje do pliku?","Tak","Nie"},3)) {
             case 1:
-                cout << "Podaj nazwę pliku:" << endl;
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                getline(cin,input);
+                cout << "Podaj nazwe pliku:" << endl;
+                cin>>input;
                 writeStartConfig(columns,rows,simulationSpeed,runningDir/"configFiles",addTxtExtension(input),startingCells);
                 break;
             default:
@@ -108,9 +109,8 @@ void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows,
                 break;
         }
     }
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     do {
-        cout << "Podaj liczbę iteracji symulacji (-1 oznacza nieskończoność):"<<endl;
+        cout << "Podaj liczbe iteracji symulacji (-1 oznacza nieskonczonosc):"<<endl;
         getline(cin,input);
         if (int temp = stoi(input); temp == 0 || temp < -1) {
             input.clear();
@@ -118,9 +118,9 @@ void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows,
     } while (input.empty());
     iterations=stoi(input);
 
-    switch (switchCase(new string[6] {
-        "Jakim 'algorytmem' chcesz uruchomić symulację?","Liniowe CPU","Wielowątkowe CPU","GPU ver. 1", "GPU ver. 2","GPU ver. 3"
-    },6)) {
+    switch (switchCase(new string[5] {
+        "Jakim 'algorytmem' chcesz uruchomic symulacje?","Liniowe CPU","Wielowatkowe CPU","GPU ver. 1", "GPU ver. 2"
+    },5)) {
         default:
         case 1:
             algorithmName = "cpulinear";
@@ -134,11 +134,30 @@ void readStartConfig(std::filesystem::path& runningDir, int& columns, int& rows,
         case 4:
             algorithmName = "gpu2";
             break;
-        case 5:
-            algorithmName = "gpu3";
-            break;
 
     }
+    //TODO: odkomentować poniższy switch-case, i usunąć powyższy switch-case jeżeli będzie potrzebne "gpu3":
+    // switch (switchCase(new string[6] {
+    //     "Jakim 'algorytmem' chcesz uruchomic symulacje?","Liniowe CPU","Wielowatkowe CPU","GPU ver. 1", "GPU ver. 2","GPU ver. 3"
+    // },6)) {
+    //     default:
+    //     case 1:
+    //         algorithmName = "cpulinear";
+    //         break;
+    //     case 2:
+    //         algorithmName = "cpuparallel";
+    //         break;
+    //     case 3:
+    //         algorithmName = "gpu1";
+    //         break;
+    //     case 4:
+    //         algorithmName = "gpu2";
+    //         break;
+    //     case 5:
+    //         algorithmName = "gpu3";
+    //         break;
+    //
+    // }
 }
 
     // Wczytuje konfigurację z pliku.

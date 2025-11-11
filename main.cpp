@@ -67,13 +67,15 @@ int main() {
         game.addRandoms(howManyRandoms);
     }
 
-    cout << "Rozpoczynam symulację: "<<columns<<" x " << rows;
+    if  (iterations == -1)
+        iterations = INT_MAX;
+
+    cout << "Rozpoczynam symulacje: "<<columns<<" x " << rows;
     if (visualize) {
-        cout<<"; prędkość: "<<simulationSpeed;
+        cout<<"; predkosc: "<<simulationSpeed;
     }
     cout<<endl;
     game.print();
-
 
     int cpuThreads = thread::hardware_concurrency();
 
@@ -130,9 +132,9 @@ int main() {
             cout << "Czas wykonywania: " << time << " [s]" << endl;
             saveStatistics(gpuThreads, columns * rows, time, algorithmName, runningDir / "results");
         }
-    } else if (algorithmName == "gpu3") {
-
     }
+    //TODO: odkomentować, jeżeli będzie potrzebne "gpu3"
+    // else if (algorithmName == "gpu3") {}
 
     return 0;
 }

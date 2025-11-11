@@ -20,12 +20,12 @@ VisualizationController::VisualizationController(GameInstance& game, int threads
     this->colors = new string[threads]; //ansiFormat+"4",ansiFormat+"10"
     int i = 0;
     while (i < threads) {
-        if (i < 7) {
+        if (i < 6) {
             colors[i] = ansiFormat+"4"+to_string(i+1)+"m";
-        } else if (i < 15) {
-            colors[i] = ansiFormat+"10"+to_string(i-7)+"m";
-        } else if (i < 15 + 256) {
-            colors[i] = ansiFormat+"48;5;"+to_string(i-15)+"m";
+        } else if (i < 14) {
+            colors[i] = ansiFormat+"10"+to_string(i-6)+"m";
+        } else if (i < 14 + 256) {
+            colors[i] = ansiFormat+"48;5;"+to_string(i-14)+"m";
         } else {
             colors[i] = ansiFormat + "48;2;" + to_string(random.rand()) + ";" + to_string(random.rand()) + ";" + to_string(random.rand()) + "]";
         }
@@ -43,7 +43,16 @@ void VisualizationController::show(){
     clearScreen();
     bool** gameArea = game.getGameArea();
 
+    // Pozioma biała kreska (ramka canvy)
+    for (int i = 0; i < columns + 2; i++) {
+        cout << white << "  ";
+    }
+    cout << resetC << endl;
+
     for (int i = 0; i < rows; i++) {
+        // Pionowa biała kreska (ramka canvy)
+        cout << white << "  ";
+
         int threadNumber;
         if (threads <= 128)
             threadNumber= whichColor(i);
@@ -53,8 +62,18 @@ void VisualizationController::show(){
             string color = (gameArea[i][j]) ? colors[threadNumber] : black;
             cout << color << "  ";
         }
+
+        // Pionowa biała kreska (ramka canvy)
+        cout << white << "  ";
+
         cout << resetC << endl;
     }
+
+    // Pozioma biała kreska (ramka canvy)
+    for (int i = 0; i < columns + 2; i++) {
+        cout << white << "  ";
+    }
+    cout << resetC << endl;
 
     cout<< resetC <<"Iteracja: "<<iteration++<<endl;
     this_thread::sleep_for(chrono::milliseconds(static_cast<int>((1000/animationsSpeed))));

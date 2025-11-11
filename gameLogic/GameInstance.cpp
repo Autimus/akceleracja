@@ -111,7 +111,7 @@ void GameInstance::applyIteration() {
 void GameInstance::print() {
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
-            cout<<((gameArea[i][j])?"⬜":"⬛");
+            cout<<((gameArea[i][j])?"1":"0");
         }
         cout<<endl;
     }

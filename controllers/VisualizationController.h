@@ -16,6 +16,7 @@ class VisualizationController{
         std::string* colors;
         const std::string ansiFormat = "\033[";
         const std::string black = ansiFormat+"40m";
+        const std::string white = ansiFormat+"47m";
         const std::string resetC = ansiFormat+"0m";
     public:
         VisualizationController(GameInstance& game, int threads, float animationsSpeed);
