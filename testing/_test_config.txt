@@ -1,15 +1,35 @@
 BOARD_SIZE(WIDTHxHEIGHT)
-10x10
-20x20
+
+TEST_FILES
+C:\Users\grons\Desktop\Studia\7sem\ao2\akceleracja\configFiles\bigtest.txt
+C:\Users\grons\Desktop\Studia\7sem\ao2\akceleracja\configFiles\glider.txt
+C:\Users\grons\Desktop\Studia\7sem\ao2\akceleracja\configFiles\test.txt
+C:\Users\grons\Desktop\Studia\7sem\ao2\akceleracja\results\generated_configs\random_10x10_33pct_10x10_33.txt
+C:\Users\grons\Desktop\Studia\7sem\ao2\akceleracja\results\generated_configs\random_10x10_66pct_10x10_66.txt
+C:\Users\grons\Desktop\Studia\7sem\ao2\akceleracja\results\generated_configs\random_50x50_33pct_50x50_33.txt
+C:\Users\grons\Desktop\Studia\7sem\ao2\akceleracja\results\generated_configs\random_50x50_66pct_50x50_66.txt
+C:\Users\grons\Desktop\Studia\7sem\ao2\akceleracja\results\generated_configs\random_100x100_33pct_100x100_33.txt
+C:\Users\grons\Desktop\Studia\7sem\ao2\akceleracja\results\generated_configs\random_100x100_66pct_100x100_66.txt
+C:\Users\grons\Desktop\Studia\7sem\ao2\akceleracja\results\generated_configs\random_500x500_33pct_500x500_33.txt
+C:\Users\grons\Desktop\Studia\7sem\ao2\akceleracja\results\generated_configs\random_500x500_66pct_500x500_66.txt
+C:\Users\grons\Desktop\Studia\7sem\ao2\akceleracja\results\generated_configs\random_1000x1000_33pct_1000x1000_33.txt
+C:\Users\grons\Desktop\Studia\7sem\ao2\akceleracja\results\generated_configs\random_1000x1000_66pct_1000x1000_66.txt
+C:\Users\grons\Desktop\Studia\7sem\ao2\akceleracja\results\generated_configs\random_5000x5000_33pct_5000x5000_33.txt
+C:\Users\grons\Desktop\Studia\7sem\ao2\akceleracja\results\generated_configs\random_5000x5000_66pct_5000x5000_66.txt
+
+LIFE_CELLS_PERCENTAGE
+
 
 THREADS_NUMBER
 1
-2
 
 ITERATIONS
+10
+50
 100
-200
+500
+1000
+
 
 ALGORITHMS
-cpulinear
-cpuparallel
+gpu2

@@ -19,13 +19,18 @@
 //#include "algorithms/gpuBasic.h"
 //
 //#include "algorithms/gpuOpt2.h"
+#ifdef USE_CUDA
+#include "algorithms/gpuBasic.h"
+#include "algorithms/gpuOpt2.h"
+#endif
 
 
 using namespace std;
 namespace fs = std::filesystem;
 
 int main() {
-    //fs::path runningDir = fs::current_path().parent_path().parent_path();
+
+//    fs::path runningDir = fs::current_path().parent_path().parent_path();
     fs::path runningDir = fs::current_path().parent_path();
     vector<pair<int,int>> startingCells;
     EnvVar envVar;
@@ -60,7 +65,7 @@ int main() {
         case 2: visualize = false; break;
         case 3:
             cout << "Tryb testowy.\n";
-            TestRunner tester(runningDir/ ".." / ".." / "testing" / "_test_config.txt",
+            TestRunner tester(runningDir / ".." / ".." / "testing" / "_test_config.txt",
                 runningDir/"results");
             tester.runAll();
             return 0;

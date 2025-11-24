@@ -12,6 +12,7 @@ if(USE_CUDA)
     enable_language(CUDA)
     set(CMAKE_CUDA_STANDARD 17)
     set(CMAKE_CUDA_ARCHITECTURES 86)
+    add_definitions(-DUSE_CUDA)
 endif()
 
 set(SOURCES
@@ -44,8 +45,6 @@ if(USE_CUDA)
     list(APPEND SOURCES
         algorithms/gpuBasic.cu
         algorithms/gpuBasic.h
-        algorithms/gpuOpt1.h
-        algorithms/gpuOpt1.cu
         algorithms/gpuOpt2.h
         algorithms/gpuOpt2.cu
     )
