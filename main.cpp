@@ -8,16 +8,17 @@
 
 #include "tools/switchCase.h"
 #include "tools/EnvVar.h"
-#include "tools/countGPUThreads.h"
+//#include "tools/countGPUThreads.h"
 #include "controllers/readStartConfig.h"
 #include "controllers/writeController.h"
 #include "controllers/VisualizationController.h"
 #include "gameLogic/GameInstance.h"
 #include "algorithms/cpuLinear.h"
 #include "algorithms/cpuParallel.h"
-#include "algorithms/gpuBasic.h"
-
-#include "algorithms/gpuOpt2.h"
+#include "testing\TestRunner.h"
+//#include "algorithms/gpuBasic.h"
+//
+//#include "algorithms/gpuOpt2.h"
 
 
 using namespace std;
@@ -49,15 +50,22 @@ int main() {
     envVar.print();
 
     if (!skipQuestions) {
-        switch (switchCase(new string[3]{"Wybierz tryb pracy","Graficzny","Tekstowy - bez wizualizacji, ale z pomiarem czasu"},3)) {
-            case 1:
-                visualize = true;
-                break;
-            case 2:
-            default:
-                visualize = false;
-                break;
+        switch (switchCase(new string[4]{
+            "Wybierz tryb pracy",
+            "Graficzny - widoczne poszczególne iteracje",
+            "Tekstowy - bez wizualizacji, ale z pomiarem czasu",
+            "Testowy - do zbierania i analizy wyników"
+            }, 4)) {
+        case 1: visualize = true; break;
+        case 2: visualize = false; break;
+        case 3:
+            cout << "Tryb testowy.\n";
+            TestRunner tester(runningDir/ ".." / ".." / "testing" / "_test_config.txt",
+                runningDir/"results");
+            tester.runAll();
+            return 0;
         }
+
         readStartConfig(runningDir, columns, rows, simulationSpeed,startingCells ,visualize,algorithmName, iterations, randomStart);
     } else {
         readFile(runningDir, columns, rows, simulationSpeed, startingCells, filename);
@@ -109,32 +117,40 @@ int main() {
             cout<<"Czas wykonywania: "<<time<<"[s]"<<endl;
             saveStatistics(cpuThreads,columns*rows,time,algorithmName,runningDir/"results");
         }
-    } else if (algorithmName == "gpu1") {
-        //GPU 1: funkcja lub kod.
-        if (visualize) {
-            for(int i=0;i<iterations;i++){
-                gpuBasic(game);
-                terminal.show();
-            }
-        }else {
-            double time = gpuBasic(game, iterations);
-            cout << "Czas wykonywania: " << time << "[s]" << endl;
-            saveStatistics(gpuThreads,columns*rows,time,algorithmName,runningDir/"results");
-        }
-    } else if (algorithmName == "gpu2") {
-        if (visualize) {
-            for (int i = 0; i < iterations; i++) {
-                gpuOpt2(game);
-                terminal.show();
-            }
-        } else {
-            double time = gpuOpt2(game, iterations);
-            cout << "Czas wykonywania: " << time << " [s]" << endl;
-            saveStatistics(gpuThreads, columns * rows, time, algorithmName, runningDir / "results");
-        }
     }
-    //TODO: odkomentować, jeżeli będzie potrzebne "gpu3"
-    // else if (algorithmName == "gpu3") {}
+
+
+    #ifdef USE_CUDA
+
+        else if (algorithmName == "gpu1") {
+            //GPU 1: funkcja lub kod.
+            if (visualize) {
+                for(int i=0;i<iterations;i++){
+                    gpuBasic(game);
+                    terminal.show();
+                }
+            }else {
+                double time = gpuBasic(game, iterations);
+                cout << "Czas wykonywania: " << time << "[s]" << endl;
+                saveStatistics(gpuThreads,columns*rows,time,algorithmName,runningDir/"results");
+            }
+        } else if (algorithmName == "gpu2") {
+            if (visualize) {
+                for (int i = 0; i < iterations; i++) {
+                    gpuOpt2(game);
+                    terminal.show();
+                }
+            } else {
+                double time = gpuOpt2(game, iterations);
+                cout << "Czas wykonywania: " << time << " [s]" << endl;
+                saveStatistics(gpuThreads, columns * rows, time, algorithmName, runningDir / "results");
+            }
+        }
+
+        //TODO: odkomentować, jeżeli będzie potrzebne "gpu3"
+         //else if (algorithmName == "gpu3") {}
+    #endif
+
 
     return 0;
 }
